@@ -19,6 +19,14 @@ Follow the existing MV pattern already used in this package: no ViewModels, stat
 - **Xcode build/test/simulator work**: use the `xcodebuildmcp-cli` skill (help-first discovery via `xcodebuildmcp <workflow> <tool> --help`). Don't hand-write `xcodebuild`/`xcrun`/`simctl`. Workspace: `TaskFlow.xcworkspace`, scheme: `TaskFlow`, simulator: "iPhone 17".
 - **GitHub** (PRs/issues): use the `gh` skill. Repo: `farhanumer/TaskFlow` (public, default branch `main`). Act as the `farhanumer` account — confirm with `gh auth status`. The `origin` remote must keep the explicit username (`https://farhanumer@github.com/farhanumer/TaskFlow.git`); without it, a stale `~/.netrc` credential for an unrelated bot account silently hijacks push auth and pushes fail with a permission error.
 
+### xcodebuildmcp-cli gotchas (known failure modes, avoid rediscovering these)
+
+- **Sendable errors on build**: this project builds under Swift 6 strict concurrency. Any new model `struct`/`enum` used in a `static let` (e.g. a `samples` array) must explicitly conform to `Sendable`, or the build fails with "not concurrency-safe because non-'Sendable' type ... may have shared mutable state". Add `Sendable` to the type up front instead of waiting for the error.
+- **`simulator screenshot` has no `--output-path` flag** — it errors with "Unknown arguments". Use `--return-format path` (or `base64`) and read the temp file path/data it returns.
+- **UI automation coordinates are in simulator points, not screenshot pixels.** `ui-automation snapshot-ui` frames use the simulator's logical point size (e.g. 402×874 for iPhone 17), while the JPEG from `screenshot`/`ui-automation screenshot` is downscaled (e.g. 368×800). If you eyeball a tap location from a screenshot image, scale it back up by `pointSize / imagePixelSize` before passing it to `tap -x -y` — don't assume the image is 1:1 with the simulator.
+- **Tab bar items often aren't exposed as individual nodes in `snapshot-ui`** (the "Tab Bar" group can report empty `children`), so `ui-automation tap --label "<TabName>"` fails to match even though the tab is visible. Fall back to coordinate taps, but note recent iOS tab bars can render as a floating pill narrower than the full screen width (not full-width thirds) — crop/inspect the screenshot to find each tab's actual center rather than dividing the screen width evenly.
+- Run `xcodebuildmcp <workflow> <tool> --help` before first use of any subcommand — required flags aren't always intuitive (e.g. `simulator build`/`simulator test` require `--workspace-path`, `--scheme`, and `--simulator-name` explicitly).
+
 ## Workflow & human gates
 
 This repo demos an end-to-end, **human-gated** feature workflow. For any piece of work:
