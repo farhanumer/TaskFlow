@@ -8,6 +8,14 @@ When asked about issues, tasks, or work items for this project, always check tha
 linear issue query --project "Claude Code Demo" --team FAR --json
 ```
 
+## GitHub
+
+This repo lives at **https://github.com/farhanumer/TaskFlow** (public), default branch `main`. Use the `gh` CLI (see the `gh` skill) for all GitHub operations — issues, PRs, checks.
+
+- **Account:** authenticate/act as the `farhanumer` GitHub account (this is the personal account used for this project). Confirm with `gh auth status` — `farhanumer` should be the active account.
+- **Remote:** `origin` is `https://farhanumer@github.com/farhanumer/TaskFlow.git`. The explicit `farhanumer@` in the URL is required — this machine has a stale `~/.netrc` entry for `github.com` under an unrelated bot account, and without a username in the URL, git/curl silently authenticates with that `.netrc` credential instead of the `gh`-authenticated `farhanumer` token, causing pushes to fail with a permission error. Don't remove the username from the remote URL.
+- **PR workflow:** branch from `main`, implement the change, build/test via the `xcodebuildmcp-cli` skill, then open the PR with `gh pr create` including a summary of what changed and a simulator screenshot of the result when the change is visual.
+
 # Project Overview
 
 This is a native **iOS application** built with **Swift 6.1+** and **SwiftUI**. The codebase targets **iOS 18.0 and later**, allowing full use of modern Swift and iOS APIs. All concurrency is handled with **Swift Concurrency** (async/await, actors, @MainActor isolation) ensuring thread-safe code.
