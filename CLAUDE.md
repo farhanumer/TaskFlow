@@ -31,8 +31,10 @@ Follow the existing MV pattern already used in this package: no ViewModels, stat
 
 This repo demos an end-to-end, **human-gated** feature workflow. For any piece of work:
 
-1. Confirm with the user which Linear issue to work on — don't just pick one.
-2. Implement the change in `TaskFlowPackage`, following existing view/model patterns.
-3. Build and test via the `xcodebuildmcp-cli` skill before considering it done.
-4. Show the result (simulator screenshot) and get the user's confirmation before opening a PR.
-5. Open the PR via the `gh` skill (`gh pr create`) with a summary of the change and a screenshot. Never push directly to `main`, and never merge a PR without the user explicitly asking.
+1. Confirm with the user which Linear issue to work on — don't just pick one. Pull its details/acceptance criteria via the `linear-cli` skill (`linear issue view <ID>`).
+2. Work the implementation in **plan mode**: propose a plan grounded in the issue's acceptance criteria and wait for explicit approval before writing any code.
+3. Create a feature branch off `main` named `feature/<issue-key>-<short-slug>` (e.g. `feature/far-7-add-search`) — never commit directly to `main`.
+4. Implement the change in `TaskFlowPackage`, following existing view/model patterns.
+5. Build and test via the `xcodebuildmcp-cli` skill before considering it done.
+6. Show the result (simulator screenshot) and get the user's confirmation before opening a PR.
+7. Push the branch and open the PR via the `gh` skill (`gh pr create`) **against `main`**, with a summary of the change and a screenshot. Never push directly to `main`, and never merge a PR without the user explicitly asking.
