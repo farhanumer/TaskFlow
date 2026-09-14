@@ -39,5 +39,5 @@ When adding interactive elements (buttons, toggles, list rows, etc.) in `TaskFlo
 3. Mark the issue **In Progress** via `linear-cli`; create feature branch `feature/<issue-key>-<short-slug>` off `main`
 4. Implement in `TaskFlowPackage`, following existing view/model patterns
 5. Test, then run via `xcodebuildmcp-cli`, in that order, sharing one `--derived-data-path` (see Build / test / run commands above)
-6. Show simulator screenshot; wait for user confirmation
+6. Show simulator screenshot; wait for user confirmation. Manual/functional verification in the simulator is scoped to what the plan's Verification section actually lists for the feature being built — don't add extra interaction tests (e.g. swipe-to-delete, unrelated gestures) unless the plan calls for them or the user asks
 7. Push branch and open PR via `gh pr create` against `main`; attach confirmed simulator screenshots with `--attach <file>#<alt text>` (uploads to `github.com/user-attachments/assets/...` so they render inline — don't use gists or relative paths, which don't render); if the PR already exists, add them via `gh pr comment <number> --attach <file>#<alt text>`. Mark the issue **Done** via `linear-cli`; never push to `main` directly; never merge without user asking
