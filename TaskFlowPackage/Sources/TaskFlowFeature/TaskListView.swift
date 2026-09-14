@@ -4,6 +4,11 @@ struct TaskListView: View {
     @Binding var tasks: [TaskItem]
     @State private var newTaskTitle: String = ""
     @State private var newTaskCategory: TaskCategory = .personal
+    @State private var showFavoritesOnly: Bool = false
+
+    private var displayedTasks: [TaskItem] {
+        showFavoritesOnly ? tasks.filter(\.isFavorite) : tasks
+    }
 
     var body: some View {
         NavigationStack {
@@ -36,13 +41,21 @@ struct TaskListView: View {
                 }
 
                 Section("Tasks") {
-                    ForEach(tasks) { task in
+                    ForEach(displayedTasks) { task in
                         HStack {
                             Button {
                                 toggle(task)
                             } label: {
                                 Image(systemName: task.isDone ? "checkmark.circle.fill" : "circle")
                                     .foregroundStyle(task.isDone ? .green : .secondary)
+                            }
+                            .buttonStyle(.plain)
+
+                            Button {
+                                toggleFavorite(task)
+                            } label: {
+                                Image(systemName: task.isFavorite ? "star.fill" : "star")
+                                    .foregroundStyle(task.isFavorite ? .yellow : .secondary)
                             }
                             .buttonStyle(.plain)
 
@@ -59,6 +72,11 @@ struct TaskListView: View {
                 }
             }
             .navigationTitle("TaskFlow")
+            .toolbar {
+                ToolbarItem {
+                    Toggle("Favorites only", isOn: $showFavoritesOnly)
+                }
+            }
         }
     }
 
@@ -72,6 +90,11 @@ struct TaskListView: View {
     private func toggle(_ task: TaskItem) {
         guard let index = tasks.firstIndex(where: { $0.id == task.id }) else { return }
         tasks[index].isDone.toggle()
+    }
+
+    private func toggleFavorite(_ task: TaskItem) {
+        guard let index = tasks.firstIndex(where: { $0.id == task.id }) else { return }
+        tasks[index].isFavorite.toggle()
     }
 
     private func deleteTasks(at offsets: IndexSet) {

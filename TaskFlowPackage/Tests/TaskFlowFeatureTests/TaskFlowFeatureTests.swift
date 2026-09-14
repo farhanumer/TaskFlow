@@ -6,6 +6,7 @@ import Testing
     #expect(task.isDone == false)
     #expect(task.title == "Buy milk")
     #expect(task.category == .personal)
+    #expect(task.isFavorite == false)
 }
 
 @Test func samplesAreNotEmpty() async throws {
