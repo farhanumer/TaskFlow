@@ -4,6 +4,11 @@ struct TaskListView: View {
     @Binding var tasks: [TaskItem]
     @State private var newTaskTitle: String = ""
     @State private var newTaskCategory: TaskCategory = .personal
+    @State private var showFavoritesOnly: Bool = false
+
+    private var filteredTasks: [TaskItem] {
+        showFavoritesOnly ? tasks.filter(\.isFavorite) : tasks
+    }
 
     var body: some View {
         NavigationStack {
@@ -36,7 +41,7 @@ struct TaskListView: View {
                 }
 
                 Section("Tasks") {
-                    ForEach(tasks) { task in
+                    ForEach(filteredTasks) { task in
                         HStack {
                             Button {
                                 toggle(task)
@@ -53,12 +58,33 @@ struct TaskListView: View {
                             Text(task.title)
                                 .strikethrough(task.isDone)
                                 .foregroundStyle(task.isDone ? .secondary : .primary)
+
+                            Spacer()
+
+                            Button {
+                                toggleFavorite(task)
+                            } label: {
+                                Image(systemName: task.isFavorite ? "star.fill" : "star")
+                                    .foregroundStyle(task.isFavorite ? .yellow : .secondary)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityIdentifier("task-row-favorite-\(task.id)")
                         }
                     }
                     .onDelete(perform: deleteTasks)
                 }
             }
             .navigationTitle("TaskFlow")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showFavoritesOnly.toggle()
+                    } label: {
+                        Image(systemName: showFavoritesOnly ? "star.fill" : "star")
+                    }
+                    .accessibilityIdentifier("tasks-favorites-filter-toggle")
+                }
+            }
         }
     }
 
@@ -74,8 +100,14 @@ struct TaskListView: View {
         tasks[index].isDone.toggle()
     }
 
+    private func toggleFavorite(_ task: TaskItem) {
+        guard let index = tasks.firstIndex(where: { $0.id == task.id }) else { return }
+        tasks[index].isFavorite.toggle()
+    }
+
     private func deleteTasks(at offsets: IndexSet) {
-        tasks.remove(atOffsets: offsets)
+        let idsToDelete = offsets.map { filteredTasks[$0].id }
+        tasks.removeAll { idsToDelete.contains($0.id) }
     }
 }
 
