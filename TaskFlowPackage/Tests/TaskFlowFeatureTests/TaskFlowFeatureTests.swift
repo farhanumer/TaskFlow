@@ -8,8 +8,17 @@ import Testing
     #expect(task.category == .personal)
 }
 
+@Test func taskItemDefaultsToNotFavorite() async throws {
+    let task = TaskItem(title: "Buy milk")
+    #expect(task.isFavorite == false)
+}
+
 @Test func samplesAreNotEmpty() async throws {
     #expect(!TaskItem.samples.isEmpty)
+}
+
+@Test func samplesIncludeAtLeastOneFavorite() async throws {
+    #expect(TaskItem.samples.contains { $0.isFavorite })
 }
 
 @Test func allCategoriesHaveDistinctSymbolsAndImageNames() async throws {

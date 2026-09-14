@@ -4,6 +4,11 @@ struct TaskListView: View {
     @Binding var tasks: [TaskItem]
     @State private var newTaskTitle: String = ""
     @State private var newTaskCategory: TaskCategory = .personal
+    @State private var showFavoritesOnly: Bool = false
+
+    private var filteredIndices: [Int] {
+        tasks.indices.filter { !showFavoritesOnly || tasks[$0].isFavorite }
+    }
 
     var body: some View {
         NavigationStack {
@@ -36,7 +41,8 @@ struct TaskListView: View {
                 }
 
                 Section("Tasks") {
-                    ForEach(tasks) { task in
+                    ForEach(filteredIndices, id: \.self) { index in
+                        let task = tasks[index]
                         HStack {
                             Button {
                                 toggle(task)
@@ -45,6 +51,15 @@ struct TaskListView: View {
                                     .foregroundStyle(task.isDone ? .green : .secondary)
                             }
                             .buttonStyle(.plain)
+
+                            Button {
+                                toggleFavorite(task)
+                            } label: {
+                                Image(systemName: task.isFavorite ? "star.fill" : "star")
+                                    .foregroundStyle(task.isFavorite ? .yellow : .secondary)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityIdentifier("task-row-favorite-\(task.id)")
 
                             Image(systemName: task.category.symbolName)
                                 .foregroundStyle(task.category.tint)
@@ -59,6 +74,17 @@ struct TaskListView: View {
                 }
             }
             .navigationTitle("TaskFlow")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showFavoritesOnly.toggle()
+                    } label: {
+                        Image(systemName: showFavoritesOnly ? "star.fill" : "star")
+                    }
+                    .foregroundStyle(showFavoritesOnly ? .yellow : .secondary)
+                    .accessibilityIdentifier("tasks-favorites-filter-toggle")
+                }
+            }
         }
     }
 
@@ -74,8 +100,14 @@ struct TaskListView: View {
         tasks[index].isDone.toggle()
     }
 
+    private func toggleFavorite(_ task: TaskItem) {
+        guard let index = tasks.firstIndex(where: { $0.id == task.id }) else { return }
+        tasks[index].isFavorite.toggle()
+    }
+
     private func deleteTasks(at offsets: IndexSet) {
-        tasks.remove(atOffsets: offsets)
+        let indicesToRemove = offsets.map { filteredIndices[$0] }
+        tasks.remove(atOffsets: IndexSet(indicesToRemove))
     }
 }
 
