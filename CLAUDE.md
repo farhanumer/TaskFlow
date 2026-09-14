@@ -26,4 +26,4 @@ MV pattern: no ViewModels, `@State`/`@Binding` in views, plain structs/enums for
 4. Implement in `TaskFlowPackage`, following existing view/model patterns
 5. Build and test via `xcodebuildmcp-cli`
 6. Show simulator screenshot; wait for user confirmation
-7. Push branch and open PR via `gh pr create` against `main`; mark the issue **Done** via `linear-cli`; never push to `main` directly; never merge without user asking
+7. Push branch and open PR via `gh pr create` against `main`; attach confirmed simulator screenshots with `--attach <file>#<alt text>` (uploads to `github.com/user-attachments/assets/...` so they render inline — don't use gists or relative paths, which don't render); if the PR already exists, add them via `gh pr comment <number> --attach <file>#<alt text>`. Mark the issue **Done** via `linear-cli`; never push to `main` directly; never merge without user asking
