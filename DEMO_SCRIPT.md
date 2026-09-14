@@ -7,7 +7,7 @@ Linear (issue tracking), XcodeBuildMCP (build/test/simulator), and GitHub (PRs).
 ---
 
 ## [0:00–0:20] Intro
-> "Hi, my name is Farhan. Today I want to show you one slice of how I use Claude Code in my day-to-day — specifically how I run a human-gated feature development workflow for an iOS app I'm building."
+> "Hi, my name is Farhan. Today I want to show you one slice of how I use Claude Code in my day-to-day — specifically how I run a human-gated feature development workflow for an iOS app I'm building, wired up to three integrated tools: Linear for issue tracking, XcodeBuildMCP for building, testing, and driving the simulator, and GitHub for pull requests. Keep an eye out for all three as we go."
 
 ---
 
