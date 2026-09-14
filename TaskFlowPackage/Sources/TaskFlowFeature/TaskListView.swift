@@ -4,6 +4,11 @@ struct TaskListView: View {
     @Binding var tasks: [TaskItem]
     @State private var newTaskTitle: String = ""
     @State private var newTaskCategory: TaskCategory = .personal
+    @State private var showFavoritesOnly: Bool = false
+
+    private var filteredIndices: [Int] {
+        tasks.indices.filter { !showFavoritesOnly || tasks[$0].isFavorite }
+    }
 
     var body: some View {
         NavigationStack {
@@ -36,29 +41,48 @@ struct TaskListView: View {
                 }
 
                 Section("Tasks") {
-                    ForEach(tasks) { task in
+                    ForEach(filteredIndices, id: \.self) { index in
                         HStack {
                             Button {
-                                toggle(task)
+                                tasks[index].isDone.toggle()
                             } label: {
-                                Image(systemName: task.isDone ? "checkmark.circle.fill" : "circle")
-                                    .foregroundStyle(task.isDone ? .green : .secondary)
+                                Image(systemName: tasks[index].isDone ? "checkmark.circle.fill" : "circle")
+                                    .foregroundStyle(tasks[index].isDone ? .green : .secondary)
                             }
                             .buttonStyle(.plain)
 
-                            Image(systemName: task.category.symbolName)
-                                .foregroundStyle(task.category.tint)
+                            Image(systemName: tasks[index].category.symbolName)
+                                .foregroundStyle(tasks[index].category.tint)
                                 .frame(width: 20)
 
-                            Text(task.title)
-                                .strikethrough(task.isDone)
-                                .foregroundStyle(task.isDone ? .secondary : .primary)
+                            Text(tasks[index].title)
+                                .strikethrough(tasks[index].isDone)
+                                .foregroundStyle(tasks[index].isDone ? .secondary : .primary)
+
+                            Spacer()
+
+                            Button {
+                                tasks[index].isFavorite.toggle()
+                            } label: {
+                                Image(systemName: tasks[index].isFavorite ? "star.fill" : "star")
+                                    .foregroundStyle(tasks[index].isFavorite ? .yellow : .secondary)
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
                     .onDelete(perform: deleteTasks)
                 }
             }
             .navigationTitle("TaskFlow")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Toggle(isOn: $showFavoritesOnly) {
+                        Label("Favorites only", systemImage: showFavoritesOnly ? "star.fill" : "star")
+                    }
+                    .toggleStyle(.button)
+                    .tint(.yellow)
+                }
+            }
         }
     }
 
@@ -69,13 +93,9 @@ struct TaskListView: View {
         newTaskTitle = ""
     }
 
-    private func toggle(_ task: TaskItem) {
-        guard let index = tasks.firstIndex(where: { $0.id == task.id }) else { return }
-        tasks[index].isDone.toggle()
-    }
-
     private func deleteTasks(at offsets: IndexSet) {
-        tasks.remove(atOffsets: offsets)
+        let indicesToRemove = offsets.map { filteredIndices[$0] }
+        tasks.remove(atOffsets: IndexSet(indicesToRemove))
     }
 }
 

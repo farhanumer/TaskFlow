@@ -5,12 +5,20 @@ public struct TaskItem: Identifiable, Equatable, Sendable {
     public var title: String
     public var isDone: Bool
     public var category: TaskCategory
+    public var isFavorite: Bool
 
-    public init(id: UUID = UUID(), title: String, isDone: Bool = false, category: TaskCategory = .personal) {
+    public init(
+        id: UUID = UUID(),
+        title: String,
+        isDone: Bool = false,
+        category: TaskCategory = .personal,
+        isFavorite: Bool = false
+    ) {
         self.id = id
         self.title = title
         self.isDone = isDone
         self.category = category
+        self.isFavorite = isFavorite
     }
 }
 
